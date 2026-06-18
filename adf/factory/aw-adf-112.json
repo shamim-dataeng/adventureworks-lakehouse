@@ -1,0 +1,15 @@
+{
+	"name": "aw-adf-112",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "uaenorth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c15e5f27-646c-4169-aeb3-d4b6d0f6399f",
+		"tenantId": "9176930e-21ae-4a9a-bb0d-a40f40dbf727"
+	}
+}
