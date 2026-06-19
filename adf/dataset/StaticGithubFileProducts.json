@@ -1,0 +1,22 @@
+{
+	"name": "StaticGithubFileProducts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GithubLSStatic",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Products.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
