@@ -1,51 +1,51 @@
 [
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Calendar.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Calendar.csv",
         "folderName":"Calendar",
         "fileName":"AdventureWorks_Calendar.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Customers.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Customers.csv",
         "folderName":"Customers",
         "fileName":"AdventureWorks_Customers.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Product_Categories.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Product_Categories.csv",
         "folderName":"Products",
         "fileName":"AdventureWorks_Product_Categories.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Product_Subcategories.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Product_Subcategories.csv",
         "folderName":"Products",
         "fileName":"AdventureWorks_Product_Subcategories.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Products.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Products.csv",
         "folderName":"Products",
         "fileName":"AdventureWorks_Products.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Returns.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Returns.csv",
         "folderName":"Returns",
         "fileName":"AdventureWorks_Returns.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Sales_2015.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Sales_2015.csv",
         "folderName":"Sales",
         "fileName":"AdventureWorks_Sales_2015.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Sales_2016.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Sales_2016.csv",
         "folderName":"Sales",
         "fileName":"AdventureWorks_Sales_2016.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Sales_2017.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Sales_2017.csv",
         "folderName":"Sales",
         "fileName":"AdventureWorks_Sales_2017.csv"
     },
     {
-        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/blob/main/data/AdventureWorks_Territories.csv",
+        "p_rel_url":"shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Territories.csv",
         "folderName":"Territories",
         "fileName":"AdventureWorks_Territories.csv"
     }
