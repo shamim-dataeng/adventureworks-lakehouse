@@ -5,7 +5,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://raw.githubusercontent.com/shamim-dataeng/adventureworks-lakehouse/refs/heads/main/data/AdventureWorks_Products.csv",
+			"url": "https://raw.githubusercontent.com",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
