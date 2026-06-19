@@ -12,7 +12,7 @@
 			"value": "https://awadls112.dfs.core.windows.net/"
 		},
 		"GithubLSStatic_properties_typeProperties_url": {
-			"value": "https://raw.githubusercontent.com"
+			"value": "https://raw.githubusercontent.com/"
 		}
 	}
 }
