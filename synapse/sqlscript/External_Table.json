@@ -1,0 +1,17 @@
+{
+	"name": "External_Table",
+	"properties": {
+		"content": {
+			"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD ='AdventureWorks_Synapse_Ext_Table'\n\nCREATE DATABASE SCOPED CREDENTIAL cred_shamim\nWITH \n    IDENTITY='Managed Identity'\n\nCREATE EXTERNAL DATA SOURCE source_silver\nWITH \n(\n    LOCATION='https://awadls112.dfs.core.windows.net/silver/',\n    CREDENTIAL= cred_shamim\n)\n\nCREATE EXTERNAL DATA SOURCE source_gold\nWITH \n(\n    LOCATION='https://awadls112.dfs.core.windows.net/gold/',\n    CREDENTIAL= cred_shamim\n)\n\nCREATE EXTERNAL FILE FORMAT format_parquet\nWITH \n(\n    FORMAT_TYPE=PARQUET,\n    DATA_COMPRESSION='org.apache.hadoop.io.compress.SnappyCodec'\n)\n-- USE CETAS FOR CREATING EXT_TABLE in gold layer of adls gen2\nCREATE EXTERNAL TABLE gold.extSales\nWITH\n(\n    LOCATION='extsales',\n    DATA_SOURCE=source_gold,\n    FILE_FORMAT=format_parquet\n) \nAS \nSELECT * FROM gold.sales;\n\nselect top 10 * from gold.extSales;\n/*\nWHAT WAS THE REQUIREMENT TO CREATE AN EXTERNAL TABLE ?\n        Views do not store the data, only the skeleton is stored\n        External Tables store the data in gold layer of ADLS gen2\n\n*/\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "awdatabase",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

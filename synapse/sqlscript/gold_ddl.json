@@ -1,0 +1,17 @@
+{
+	"name": "gold_ddl",
+	"properties": {
+		"content": {
+			"query": "-- Create the schema \nCREATE SCHEMA gold;\nGO\n-- Create views in the gold schema that would be accessed by BI suite\n\n-- 1. Calendar View\nCREATE VIEW gold.calendar AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Calendar/',\n        FORMAT = 'PARQUET'\n    ) as calendarQuery;\nGO\n\n-- 2. Customer View \nCREATE VIEW gold.customers AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Customers',\n        FORMAT = 'PARQUET'\n    ) as customerQuery;\nGO\n\n-- 3. Product Categories View\nCREATE VIEW gold.products_cat AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Product_Categories',\n        FORMAT = 'PARQUET'\n    ) as prodCatQuery;\nGO\n\n-- 4. Product SubCategories View\nCREATE VIEW gold.products_sub_cat AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Product_SubCategories',\n        FORMAT = 'PARQUET'\n    ) as prodSubCatQuery;\nGO\n\n-- 5. Product View\nCREATE VIEW gold.products AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Products',\n        FORMAT = 'PARQUET'\n    ) as prodQuery;\nGO\n\n-- 6. Returns View\nCREATE VIEW gold.returns AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Returns',\n        FORMAT = 'PARQUET'\n    ) as returnsQuery;\nGO\n\n-- 7. Territories View\nCREATE VIEW gold.territories AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Territories',\n        FORMAT = 'PARQUET'\n    ) as terQuery;\nGO\n\n-- 8. Sales View\nCREATE VIEW gold.sales AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Sales',\n        FORMAT = 'PARQUET'\n    ) as salesQuery;\n\n-- CHECK THE EXISTENCE OF GOLD SCHEMA IN SERVERLESS SQL DB WHICH USES A METADATA LAYER TO COMMUNICATE WITH THE UNDERLYING DATA LAKE AND MAKES IT A LAKEHOUSE \nSELECT * FROM sys.schemas;\n\n-- Synapse SQL (serverless), uses T-SQL\nSELECT TOP 10 * FROM gold.customers;\n/*\nNOTE:\n    GO is a batch separator. It is not actually SQL syntax — it is a command understood by tools like Synapse Studio, SSMS, and Azure Data Studio.\n    It tells the SQL engine:\n                                \"Execute everything above this line as one batch, then start a new batch.\"\n*/",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "awdatabase",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
