@@ -1,0 +1,137 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "synapse-aw-project-sa"
+		},
+		"synapse-aw-project-sa-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synapse-aw-project-sa-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-aw-project-sa.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"synapse-aw-project-sa-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://awsynapsedefault.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapse-aw-project-sa-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('synapse-aw-project-sa-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapse-aw-project-sa-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('synapse-aw-project-sa-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/External_Table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD ='AdventureWorks_Synapse_Ext_Table'\n\nCREATE DATABASE SCOPED CREDENTIAL cred_shamim\nWITH \n    IDENTITY='Managed Identity'\n\nCREATE EXTERNAL DATA SOURCE source_silver\nWITH \n(\n    LOCATION='https://awadls112.dfs.core.windows.net/silver/',\n    CREDENTIAL= cred_shamim\n)\n\nCREATE EXTERNAL DATA SOURCE source_gold\nWITH \n(\n    LOCATION='https://awadls112.dfs.core.windows.net/gold/',\n    CREDENTIAL= cred_shamim\n)\n\nCREATE EXTERNAL FILE FORMAT format_parquet\nWITH \n(\n    FORMAT_TYPE=PARQUET,\n    DATA_COMPRESSION='org.apache.hadoop.io.compress.SnappyCodec'\n)\n-- USE CETAS FOR CREATING EXT_TABLE in gold layer of adls gen2\nCREATE EXTERNAL TABLE gold.extSales\nWITH\n(\n    LOCATION='extsales',\n    DATA_SOURCE=source_gold,\n    FILE_FORMAT=format_parquet\n) \nAS \nSELECT * FROM gold.sales;\n\nselect top 10 * from gold.extSales;\n/*\nWHAT WAS THE REQUIREMENT TO CREATE AN EXTERNAL TABLE ?\n        Views do not store the data, only the skeleton is stored\n        External Tables store the data in gold layer of ADLS gen2\n\n*/\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "awdatabase",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/gold_ddl')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Create the schema \nCREATE SCHEMA gold;\nGO\n-- Create views in the gold schema that would be accessed by BI suite\n\n-- 1. Calendar View\nCREATE VIEW gold.calendar AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Calendar/',\n        FORMAT = 'PARQUET'\n    ) as calendarQuery;\nGO\n\n-- 2. Customer View \nCREATE VIEW gold.customers AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Customers',\n        FORMAT = 'PARQUET'\n    ) as customerQuery;\nGO\n\n-- 3. Product Categories View\nCREATE VIEW gold.products_cat AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Product_Categories',\n        FORMAT = 'PARQUET'\n    ) as prodCatQuery;\nGO\n\n-- 4. Product SubCategories View\nCREATE VIEW gold.products_sub_cat AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Product_SubCategories',\n        FORMAT = 'PARQUET'\n    ) as prodSubCatQuery;\nGO\n\n-- 5. Product View\nCREATE VIEW gold.products AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Products',\n        FORMAT = 'PARQUET'\n    ) as prodQuery;\nGO\n\n-- 6. Returns View\nCREATE VIEW gold.returns AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Returns',\n        FORMAT = 'PARQUET'\n    ) as returnsQuery;\nGO\n\n-- 7. Territories View\nCREATE VIEW gold.territories AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Territories',\n        FORMAT = 'PARQUET'\n    ) as terQuery;\nGO\n\n-- 8. Sales View\nCREATE VIEW gold.sales AS\n    SELECT * FROM OPENROWSET(\n        BULK 'https://awadls112.dfs.core.windows.net/silver/AdventureWorks_Sales',\n        FORMAT = 'PARQUET'\n    ) as salesQuery;\n\n-- CHECK THE EXISTENCE OF GOLD SCHEMA IN SERVERLESS SQL DB WHICH USES A METADATA LAYER TO COMMUNICATE WITH THE UNDERLYING DATA LAKE AND MAKES IT A LAKEHOUSE \nSELECT * FROM sys.schemas;\n\n-- Synapse SQL (serverless), uses T-SQL\nSELECT TOP 10 * FROM gold.customers;\n/*\nNOTE:\n    GO is a batch separator. It is not actually SQL syntax — it is a command understood by tools like Synapse Studio, SSMS, and Azure Data Studio.\n    It tells the SQL engine:\n                                \"Execute everything above this line as one batch, then start a new batch.\"\n*/",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "awdatabase",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		}
+	]
+}
