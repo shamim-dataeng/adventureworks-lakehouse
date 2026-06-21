@@ -6,7 +6,7 @@ An end-to-end data engineering project built on Microsoft Azure, implementing a 
 
 ## 📐 Architecture
 
-![Architecture Diagram](./assets/architecture-diagram.png)
+![Architecture Diagram](./assets/architecture_diagram.png)
 
 
 ---
